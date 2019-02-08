@@ -90,7 +90,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         pro.put("server.port", "8091");
 
         app.setDefaultProperties(pro);
-       // app.setDefaultProperties(Collections.singletonMap("server.port", "8091"));
+       // //app.setDefaultProperties(Collections.singletonMap("server.port", "8091"));//////
+        //Had to change this 
         app.run(args);
         
     	
