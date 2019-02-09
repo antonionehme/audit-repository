@@ -79,6 +79,7 @@ public class WorkflowParticipant7 {//Added the extension hoping to get the servi
 	  private static String mostRecentReportedLocalHash;// LocalHash Values Reported by other clients to the audit server.
 	  private static Long epsilon=(long) 100.0;
 	  // These are added for the command line options
+	  private static String addresstoPublish="";
 	  private static String port="";
 	  private static String name="";
 	  private static String recipientPort= "";
@@ -285,6 +286,10 @@ public class WorkflowParticipant7 {//Added the extension hoping to get the servi
        //sendHTTPMessage("http://localhost:8092","test");
         	option=scan.nextLine();
         }break;
+        case "5" :{
+        
+        option=scan.nextLine();}
+        break; 
         
         default :{
            System.out.println("Invalid Option");
@@ -456,6 +461,7 @@ pullAudits();// Verify that tthe audit record shows on the audit server/
     RestTemplate restTemplate = new RestTemplate();
     Address address = new Address(name, Files.readAllBytes(publicKey));
     restTemplate.put(node.toString() + "/address?publish=true", address);
+    addresstoPublish= Base64.encodeBase64String(address.getHash());
     System.out.println("Hash of new address: " + Base64.encodeBase64String(address.getHash()));
 }
 
