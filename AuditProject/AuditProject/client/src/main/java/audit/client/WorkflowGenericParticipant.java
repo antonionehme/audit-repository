@@ -20,6 +20,7 @@ import audit.common.domain.Address;
 import audit.common.domain.Transaction;
 
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -68,7 +69,7 @@ import java.util.*;
 
 @Service
 @SpringBootApplication //Added this for the web service.
-public class WorkflowParticipant7 {//Added the extension hoping to get the service variables
+public class WorkflowGenericParticipant {//Added the extension hoping to get the service variables
 	 private static KeyStore clientKeyStore;
 	  static private final String clientpassphrase = "clientpw";
 	  static private final String serverpassphrase = "serverpw";
@@ -79,6 +80,7 @@ public class WorkflowParticipant7 {//Added the extension hoping to get the servi
 	  private static String mostRecentReportedLocalHash;// LocalHash Values Reported by other clients to the audit server.
 	  private static Long epsilon=(long) 100.0;
 	  // These are added for the command line options
+	  static String file_send = "data_send.csv"; static String file_recieve = "data_recieve.csv";
 	  private static String addresstoPublish="";
 	  private static String port="";
 	  private static String name="";
@@ -105,7 +107,7 @@ public class WorkflowParticipant7 {//Added the extension hoping to get the servi
             formatter.printHelp("BlockchainClient", options , true);
         }
     	
-        SpringApplication app = new SpringApplication(WorkflowParticipant7.class);
+        SpringApplication app = new SpringApplication(WorkflowGenericParticipant.class);
         Map<String, Object> pro = Maps.newHashMap();
         pro.put("server.port", port);
 
@@ -179,7 +181,7 @@ public class WorkflowParticipant7 {//Added the extension hoping to get the servi
       //Where audit recs are stored
       
       @Autowired
-      public WorkflowParticipant7() {//public TransactionService(AddressService addressService) {
+      public WorkflowGenericParticipant() {//public TransactionService(AddressService addressService) {
         //  this.addressService = addressService;
       }
 
@@ -215,9 +217,18 @@ public class WorkflowParticipant7 {//Added the extension hoping to get the servi
        */
       // public synchronized boolean add
       public synchronized boolean add(String message) throws Exception { //This is the method for a participant to receive a message.
-    	  System.out.println("Message Received by "+ name );
+    	  System.out.println("_____________Message Received by "+ name );
+    	  FileWriter fileWriter = new FileWriter(file_recieve,true);
+      	long startTime = System.nanoTime();
+      	
     	  boolean verif=EncryptedAuditRecordverification(message,"client2");//Here's where the problem is. When this is commented, the message gets received.
               msgPool.add(message);
+         
+        long endTime = System.nanoTime();long duration = (endTime - startTime);
+              fileWriter.append(name+","+duration+"\n");
+          	fileWriter.flush();
+              fileWriter.close();
+             
               //Here, we trigger the audit rec verification.
               //Here, we can directly send the message to the next participant.
               //if(verif)  sendMessageToParticipant("http://localhost:8095", msg, "key.priv", "0xbdXETP8nmHznzg34Xzd9P3mNmRlIC+MQEXoqe1aGs=", "client2", "server");
@@ -282,14 +293,18 @@ public class WorkflowParticipant7 {//Added the extension hoping to get the servi
        // publishAuditRecord("key.priv",postedAuditRecs.get(0),"HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
         pullAudits();//Added; not essential
         JWTMsg msg=new JWTMsg("Data", "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
-        sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "0xbdXETP8nmHznzg34Xzd9P3mNmRlIC+MQEXoqe1aGs=", "client2", "server");
-       //sendHTTPMessage("http://localhost:8092","test");
+        
+    	FileWriter fileWriter = new FileWriter(file_send,true);
+    	long startTime = System.nanoTime();
+    	
+        sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+       
+        long endTime = System.nanoTime();long duration = (endTime - startTime);
+        fileWriter.append(name+","+duration+"\n");
+    	fileWriter.flush();
+        fileWriter.close();
         	option=scan.nextLine();
         }break;
-        case "5" :{
-        
-        option=scan.nextLine();}
-        break; 
         
         default :{
            System.out.println("Invalid Option");

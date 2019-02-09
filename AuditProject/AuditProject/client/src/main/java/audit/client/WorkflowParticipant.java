@@ -54,6 +54,9 @@ import audit.client.*;
 
 import java.util.*;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 
 /**
@@ -78,8 +81,9 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
 	  private static String mostRecentAuditRecord; //published on the audit server by any participant. THis is because elements in a hashmap are not in order.
 	  private static String mostRecentReportedLocalHash;// LocalHash Values Reported by other clients to the audit server.
 	  private static Long epsilon=(long) 100.0;
+	  private static String name= "Participant 1";
 	  
-    public static void main(String args[]) throws Exception {
+    public static void main(String args[]) throws Exception, IOException {
     	JWTMsg msg=new JWTMsg("Data", "Issuer", "Recipient", "Label", new String[] {"Prev1", "Prev2"}, new String[] {"ParaPrev1", "ParaPrev2"});
     	JWTMsg msg2=new JWTMsg(msg.Plain_JWT(msg));
     	System.out.println("First: "+msg.Plain_JWT(msg));
@@ -224,8 +228,15 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         publishAuditRecord("key.priv","ParaPrev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
         
         JWTMsg msg=new JWTMsg("Data", "Issuer", "Recipient", "Label", new String[] {"Prev1", "Prev2"}, new String[] {"ParaPrev1", "ParaPrev2"});
+        //Time this 
+        String file_send = "data_send.csv";
+    	FileWriter fileWriter = new FileWriter(file_send,true);
+    	long startTime = System.nanoTime();
         sendMessageToParticipant("http://localhost:8092/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
-       //sendHTTPMessage("http://localhost:8092","test");
+        long endTime = System.nanoTime();long duration = (endTime - startTime);
+        fileWriter.append(name+","+duration+","+"\n");
+    	fileWriter.flush();
+        fileWriter.close();
         	option=scan.nextLine();
         }break;
         

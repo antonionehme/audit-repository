@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import audit.client.WorkflowGenericParticipant;
 import audit.client.WorkflowParticipant;
 import audit.client.WorkflowParticipant3;
 import audit.client.WorkflowParticipant4;
@@ -20,15 +21,15 @@ import java.util.Set;
 
 @RestController()
 @RequestMapping("participant")
-public class MsgControllerWorkflowParticipant5 {
+public class MsgControllerGeneric {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MsgControllerWorkflowParticipant5.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MsgControllerGeneric.class);
 
-	private final WorkflowParticipant5 msgService;//MsgService msgService;
+	private final WorkflowGenericParticipant msgService;//MsgService msgService;
 	// private final NodeService nodeService;
 
 	@Autowired
-	public MsgControllerWorkflowParticipant5(WorkflowParticipant5 msgService) {//public MsgController(MsgService msgService) {//this is changed to Merge if we are to combine the classes for AuditRec verif.
+	public MsgControllerGeneric(WorkflowGenericParticipant msgService) {//public MsgController(MsgService msgService) {//this is changed to Merge if we are to combine the classes for AuditRec verif.
 		this.msgService = msgService;
 		// this.nodeService = nodeService;
 	}
