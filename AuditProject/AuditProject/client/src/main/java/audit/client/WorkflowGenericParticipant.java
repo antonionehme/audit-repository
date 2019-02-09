@@ -54,6 +54,7 @@ import audit.common.domain.Transaction;
 import audit.client.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 
@@ -292,7 +293,9 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         case "4": {System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
        // publishAuditRecord("key.priv",postedAuditRecs.get(0),"HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
         pullAudits();//Added; not essential
-        JWTMsg msg=new JWTMsg("Data", "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+        TimeUnit.SECONDS.sleep(1);
+        String dummyData = ""+System.nanoTime();
+        JWTMsg msg=new JWTMsg(dummyData, "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
         
     	FileWriter fileWriter = new FileWriter(file_send,true);
     	long startTime = System.nanoTime();
@@ -426,7 +429,8 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
 		//sendHTTPMessage(RecipientURL,"cZbLrbvnftn4pGNPU0PMpZTS0kQPTywNMDr3qY3GT78LEtjN4xP+kZcqVO3QtjDoDQiVT11KM7fwTvPDratEUyfHhY3JjskAgIpqaufmNBpSBNiJawcw9F+OZxpUwltUZQHfRrp0H9ZCnrMqeaCLegFFWAK8WKa4BH2UluBSbtviEgHqS1WO1P+Lf75MjdoKsYDDhVLjx6VGJHLI0gcWxBZvBkHBhy7FfwHKMdW0gtirNmuyQhBr8luWxYEp1M/wYNENhUKrYFuaJ5F2NLKblzL0g/K0SZNUcq2J9mqXNf6mWPepgXvNjT608nHMTNhNgYK7hQX2SI0B++ZzXD7XKw==");//Send msg from here, participant will on the other end verifies the record.
     }
 
-    private static void sendHTTPMessage(String URL, String message) { //This is to send messages from one participant to another. An audit record has to go in parallel with this action. 
+    private static void sendHTTPMessage(String URL, String message) throws Exception {//Added throuws Exception
+//This is to send messages from one participant to another. An audit record has to go in parallel with this action. 
     	//Messages have to be encrypted with the recipient's public key, and audit records with the workflow's public key.
         RestTemplate restTemplate = new RestTemplate();
         

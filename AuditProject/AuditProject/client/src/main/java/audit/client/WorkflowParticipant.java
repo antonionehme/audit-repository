@@ -91,7 +91,7 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
     	  //Turning this to a service
         SpringApplication app = new SpringApplication(WorkflowParticipant.class);
         Map<String, Object> pro = Maps.newHashMap();
-        pro.put("server.port", "8091");
+        pro.put("server.port", "8101");
 
         app.setDefaultProperties(pro);
        // //app.setDefaultProperties(Collections.singletonMap("server.port", "8091"));//////
@@ -232,7 +232,7 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         String file_send = "data_send.csv";
     	FileWriter fileWriter = new FileWriter(file_send,true);
     	long startTime = System.nanoTime();
-        sendMessageToParticipant("http://localhost:8092/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+        sendMessageToParticipant("http://localhost:8102/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         long endTime = System.nanoTime();long duration = (endTime - startTime);
         fileWriter.append(name+","+duration+","+"\n");
     	fileWriter.flush();
