@@ -340,7 +340,7 @@ public class JWTMsg {
     }
     
     
-    public static String CleanReceivedPrevForVerification(String Prev) {
+    public static String CleanReceivedPrevForVerification(String Prev) {// Java replaces / with \/ or \\/ in the string for some reason
     	String ret= Prev.replaceAll("\\\\/", "/");
     	return ret;
     	
@@ -390,14 +390,14 @@ public static String ArraytoStringCleanCut(String[] strArray) {
 	String combine="";
 	for(int i=0; i<strArray.length; i++) {
 		if(i==0) {combine+=strArray[i];}
-		else {combine=combine+"xyz"+ strArray[i];}// Fixed this.
+		else {combine=combine+"xyz123"+ strArray[i];}// Fixed this.
 	}
 	return combine;
 }
 
 public static String[] StringCleanCuttoArray(String str) {
 	//Split string at |||.
-	String[] ret=str.split("xyz");
+	String[] ret=str.split("xyz123");
 	return ret;
 }
 

@@ -55,6 +55,7 @@ import audit.client.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.Random;
 
 
 
@@ -116,13 +117,13 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         app.run(args);
         
     	
-        SendingandVerifyingMessagesandAuditRecs();
+        //SendingandVerifyingMessagesandAuditRecs();
        // SendingandVerifyingMessagesandAuditRecsWithKeyFiles(Paths.get("client.priv"),Paths.get("client.public"),Paths.get("key.private"),Paths.get("key.pub"));
         
        // publishAddress("key.pub", "Antonio Nehme");
         //UseCommandLineOptions(); Need to copy the body and copy it to the main if this is to be used.
 
-        pullAudits();
+       // pullAudits(); 
         switchOptions();
     }
   
@@ -219,18 +220,41 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
       // public synchronized boolean add
       public synchronized boolean add(String message) throws Exception { //This is the method for a participant to receive a message.
     	  System.out.println("_____________Message Received by "+ name );
-    	  FileWriter fileWriter = new FileWriter(file_recieve,true);
-      	long startTime = System.nanoTime();
+    	 
+    	  FileWriter fileWriter_recieve = new FileWriter(file_recieve,true);
+      	long startTime_recieve = System.nanoTime();
       	
     	  boolean verif=EncryptedAuditRecordverification(message,"client2");//Here's where the problem is. When this is commented, the message gets received.
               msgPool.add(message);
          
-        long endTime = System.nanoTime();long duration = (endTime - startTime);
-              fileWriter.append(name+","+duration+"\n");
-          	fileWriter.flush();
-              fileWriter.close();
+        long endTime_recieve = System.nanoTime();long duration_recieve = (endTime_recieve - startTime_recieve);
+        fileWriter_recieve.append(name+","+duration_recieve+"\n");
+        fileWriter_recieve.flush();
+        fileWriter_recieve.close();
              
-              //Here, we trigger the audit rec verification.
+              //Here, we trigger the audit rec verification. Added to automate the simulation.
+              ///////////////////////////////////////This is case 4 //////////////////////////////////////
+             /* pullAudits();//Added; not essential
+              TimeUnit.SECONDS.sleep(1);
+              Random rand = new Random();
+              int n = rand.nextInt(500000) + 1;
+              String dummyData = "Data"+n+""+System.nanoTime();
+
+              JWTMsg msg=new JWTMsg(dummyData, "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+              
+          	FileWriter fileWriter_send = new FileWriter(file_send,true);
+          	long startTime_send = System.nanoTime();
+          	
+              sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+             
+              long endTime_send = System.nanoTime();long duration_send = (endTime_send - startTime_send);
+              fileWriter_send.append(name+","+duration_send+"\n");
+              fileWriter_send.flush();
+              fileWriter_send.close();*/
+              //Not having the chance to close
+              
+//////////////////////////////////////end of Case 4//////////////////////////////////////
+              
               //Here, we can directly send the message to the next participant.
               //if(verif)  sendMessageToParticipant("http://localhost:8095", msg, "key.priv", "0xbdXETP8nmHznzg34Xzd9P3mNmRlIC+MQEXoqe1aGs=", "client2", "server");
               return true;
@@ -293,9 +317,11 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         case "4": {System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
        // publishAuditRecord("key.priv",postedAuditRecs.get(0),"HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
         pullAudits();//Added; not essential
-        TimeUnit.SECONDS.sleep(1);
-        String dummyData = ""+System.nanoTime();
-        JWTMsg msg=new JWTMsg(dummyData, "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+        TimeUnit.SECONDS.sleep(1); 
+        Random rand = new Random();
+        int n = rand.nextInt(500000) + 1;
+        String dummyData = "Data"+n+""+System.nanoTime();
+        JWTMsg msg=new JWTMsg("Data", "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
         
     	FileWriter fileWriter = new FileWriter(file_send,true);
     	long startTime = System.nanoTime();
@@ -411,7 +437,7 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
 		KeyPair auditPair =msg.getKeyPairFromFile(auditKeyPair, "serverpw", serverpassphrase, "serverprivate");
 		
 		String JWTEncMsg= msg.ArraytoStringCleanCut(msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic()));//msg.Enc_JWT(msg,(RSAPublicKey)receiverPair.getPublic());
-		System.out.println("Encrypted String Sent to Participant 3 " +JWTEncMsg);
+		System.out.println("Encrypted String Sent to Next participant " +JWTEncMsg);
 		//My guess is that when encrypting a string with a public key, its size changes.<=========
 		String[] EncryptedArray=msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic());
 		System.out.println("Printing Array: "+ EncryptedArray.toString());
@@ -454,7 +480,7 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
     
     private static void publishTransaction(URL node, Path privateKey, String text, byte[] senderHash, String LocalHash) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
-        
+        System.out.println("What we are publishing "+text);
         byte[] signature = SignatureUtils.sign(text.getBytes(), Files.readAllBytes(privateKey));
         //Here, the sender signs the text prior to sending it.
         Transaction transaction = new Transaction(text, senderHash, signature, LocalHash);
@@ -678,7 +704,13 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
     	KeyPair receiverPair =m.getKeyPairFromFile(ClientPair, "clientpw", clientpassphrase, "clientprivate");
 		//String JWTEncMsg= msg.Enc_JWT(msg,(RSAPublicKey)receiverPair.getPublic());
     	//System.out.println("0");
-    	String[] receivedMsgArray=m.StringCleanCuttoArray(EncryptedReceivedMsg);
+    	//==========> Maybe try cleaning the encrypted message///////////// Does not harm but not useful
+    	/*System.out.println("This is how the reciever got the message: "+EncryptedReceivedMsg);
+    	String CleanedRecievedMessage=m.CleanReceivedPrevForVerification(EncryptedReceivedMsg);
+    	String[] receivedMsgArray=m.StringCleanCuttoArray(CleanedRecievedMessage);*/
+    	//
+    	String[] receivedMsgArray=m.StringCleanCuttoArray(EncryptedReceivedMsg);///////////////////
+    	
     	//System.out.println("1");
     //	String receivedMsgArrayDecrypt[]= m.decrypt_long(receivedMsgArray, (RSAPrivateKey)receiverPair.getPrivate());
     	//System.out.println("2- Problem seems to be here.");
@@ -706,7 +738,9 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
 				else {
 					if(!ReceivedJWTMsg.getPrev().equals(null)) {
 						for(int i=0; i<ReceivedJWTMsg.getPrev().length;i++) {
-							//System.out.println("After Cleaning "+m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getPrev()[i]));
+							
+							System.out.println("Before Cleaning "+ReceivedJWTMsg.getPrev()[i]);
+							System.out.println("After Cleaning "+m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getPrev()[i]));
 							if(!pulledAuditRecs.contains(m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getPrev()[i]))) {//Here is where things are going wrong.
 								System.out.println("Prev Previous record "+ReceivedJWTMsg.getPrev()[i]+ " is not valid in the message");
 								return false;
