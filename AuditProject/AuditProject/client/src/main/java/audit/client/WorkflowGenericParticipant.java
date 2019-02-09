@@ -222,12 +222,12 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
     	  System.out.println("_____________Message Received by "+ name );
     	 
     	  FileWriter fileWriter_recieve = new FileWriter(file_recieve,true);
-      	long startTime_recieve = System.nanoTime();
+      	long startTime_recieve = System.currentTimeMillis();
       	
     	  boolean verif=EncryptedAuditRecordverification(message,"client2");//Here's where the problem is. When this is commented, the message gets received.
               msgPool.add(message);
          
-        long endTime_recieve = System.nanoTime();long duration_recieve = (endTime_recieve - startTime_recieve);
+        long endTime_recieve = System.currentTimeMillis(); long duration_recieve = (endTime_recieve - startTime_recieve);
         fileWriter_recieve.append(name+","+duration_recieve+"\n");
         fileWriter_recieve.flush();
         fileWriter_recieve.close();
@@ -238,17 +238,17 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
               TimeUnit.SECONDS.sleep(1);
               Random rand = new Random();
               int n = rand.nextInt(500000) + 1;
-              String dummyData = "Data"+n+""+System.nanoTime();
+              String dummyData = "Data"+n+""+System.currentTimeMillis();
 
               JWTMsg msg=new JWTMsg(dummyData, "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
               
           	FileWriter fileWriter_send = new FileWriter(file_send,true);
-          	long startTime_send = System.nanoTime();
+          	long startTime_send = System.currentTimeMillis();
           	
               sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
              
-              long endTime_send = System.nanoTime();long duration_send = (endTime_send - startTime_send);
-              fileWriter_send.append(name+","+duration_send+"\n");
+              long endTime_send = System.currentTimeMillis();long duration_send = (endTime_send - startTime_send);
+              fileWriter_send.append(name+","+duration_send+"\n");// this becomes like a loop...
               fileWriter_send.flush();
               fileWriter_send.close();*/
               //Not having the chance to close
@@ -320,15 +320,15 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         TimeUnit.SECONDS.sleep(1); 
         Random rand = new Random();
         int n = rand.nextInt(500000) + 1;
-        String dummyData = "Data"+n+""+System.nanoTime();
-        JWTMsg msg=new JWTMsg("Data", "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+        String dummyData = "Data"+n+""+System.currentTimeMillis();
+        JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
         
     	FileWriter fileWriter = new FileWriter(file_send,true);
-    	long startTime = System.nanoTime();
+    	long startTime = System.currentTimeMillis();
     	
         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
        
-        long endTime = System.nanoTime();long duration = (endTime - startTime);
+        long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
         fileWriter.append(name+","+duration+"\n");
     	fileWriter.flush();
         fileWriter.close();
@@ -437,20 +437,20 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
 		KeyPair auditPair =msg.getKeyPairFromFile(auditKeyPair, "serverpw", serverpassphrase, "serverprivate");
 		
 		String JWTEncMsg= msg.ArraytoStringCleanCut(msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic()));//msg.Enc_JWT(msg,(RSAPublicKey)receiverPair.getPublic());
-		System.out.println("Encrypted String Sent to Next participant " +JWTEncMsg);
+		//System.out.println("Encrypted String Sent to Next participant " +JWTEncMsg);
 		//My guess is that when encrypting a string with a public key, its size changes.<=========
 		String[] EncryptedArray=msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic());
-		System.out.println("Printing Array: "+ EncryptedArray.toString());
+		/////System.out.println("Printing Array: "+ EncryptedArray.toString());
 		
 		String JWTEncAudit= msg.ArraytoStringCleanCut(msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), auditPair.getPublic()));//msg.Enc_JWT(msg,(RSAPublicKey)auditPair.getPublic());
 		
-		System.out.println("PrePublish. ");
+		////System.out.println("PrePublish. ");
 		publishAuditRecord(SenderPrivateKey, JWTEncAudit, senderAddress);
-		System.out.println("Publishing Passed. ");
+		////System.out.println("Publishing Passed. ");
 		//sendHTTPMessage(RecipientURL,JWTEncMsg); It works if I type the string though.
 		/*We have a problem here. For some readon, I cannot send JWTEncMsg.
 		 * */
-		System.out.println("What I am trying to send: "+JWTEncMsg);
+		////System.out.println("What I am trying to send: "+JWTEncMsg);
 		sendHTTPMessage(RecipientURL,JWTEncMsg);
 		//sendHTTPMessage(RecipientURL,"cZbLrbvnftn4pGNPU0PMpZTS0kQPTywNMDr3qY3GT78LEtjN4xP+kZcqVO3QtjDoDQiVT11KM7fwTvPDratEUyfHhY3JjskAgIpqaufmNBpSBNiJawcw9F+OZxpUwltUZQHfRrp0H9ZCnrMqeaCLegFFWAK8WKa4BH2UluBSbtviEgHqS1WO1P+Lf75MjdoKsYDDhVLjx6VGJHLI0gcWxBZvBkHBhy7FfwHKMdW0gtirNmuyQhBr8luWxYEp1M/wYNENhUKrYFuaJ5F2NLKblzL0g/K0SZNUcq2J9mqXNf6mWPepgXvNjT608nHMTNhNgYK7hQX2SI0B++ZzXD7XKw==");//Send msg from here, participant will on the other end verifies the record.
     }
@@ -480,12 +480,12 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
     
     private static void publishTransaction(URL node, Path privateKey, String text, byte[] senderHash, String LocalHash) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
-        System.out.println("What we are publishing "+text);
+       // System.out.println("What we are publishing "+text);
         byte[] signature = SignatureUtils.sign(text.getBytes(), Files.readAllBytes(privateKey));
         //Here, the sender signs the text prior to sending it.
         Transaction transaction = new Transaction(text, senderHash, signature, LocalHash);
         restTemplate.put(node.toString() + "/transaction?publish=true", transaction);
-        System.out.println("Hash of new transaction: " + Base64.encodeBase64String(transaction.getHash()));
+      //  System.out.println("Hash of new transaction: " + Base64.encodeBase64String(transaction.getHash()));
     }
     
     public static void publishAuditRecord(String publisheprivatekey, String auditRecord, String sender) throws MalformedURLException, Exception{// Uses publishTransaction()
@@ -554,7 +554,7 @@ pullAudits();// Verify that tthe audit record shows on the audit server/
         in.close();
         //print in String
         String ResponseStr=response.toString();
-        System.out.println(ResponseStr);
+       // System.out.println(ResponseStr);
         //Now, I need to parse the response, if it is not empty
         
         if(!ResponseStr.equals("[]")) {
@@ -613,7 +613,7 @@ pullAudits();// Verify that tthe audit record shows on the audit server/
     
     private static byte[] calculateLocalHash() {
         String hashableData = ArrayListtoString(getStoredAuditRecs());
-        System.out.println("hashableData "+ hashableData);
+        //System.out.println("hashableData "+ hashableData);
         return DigestUtils.sha256(hashableData);
     }
     
@@ -705,7 +705,7 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
 		//String JWTEncMsg= msg.Enc_JWT(msg,(RSAPublicKey)receiverPair.getPublic());
     	//System.out.println("0");
     	//==========> Maybe try cleaning the encrypted message///////////// Does not harm but not useful
-    	/*System.out.println("This is how the reciever got the message: "+EncryptedReceivedMsg);
+    	/*System.out.println("This is how the receiver got the message: "+EncryptedReceivedMsg);
     	String CleanedRecievedMessage=m.CleanReceivedPrevForVerification(EncryptedReceivedMsg);
     	String[] receivedMsgArray=m.StringCleanCuttoArray(CleanedRecievedMessage);*/
     	//
@@ -716,7 +716,7 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
     	//System.out.println("2- Problem seems to be here.");
     	String receivedMsg=m.ArraytoString(m.decrypt_long(receivedMsgArray, (RSAPrivateKey)receiverPair.getPrivate()));
     	//String receivedMsg= m.Dec_JWT(EncryptedReceivedMsg, (RSAPrivateKey)receiverPair.getPrivate());
-		System.out.println("Received Msg After Decrypt:" +receivedMsg+ "END");
+		//System.out.println("Received Msg After Decrypt:" +receivedMsg+ "END");
     	String VerifyAudit=m.ArraytoStringCleanCut(m.encrypt_long(m.Split_to_List(receivedMsg), auditPublic));
 		
     	//To implement every detail of this, we need to parse the message to obtain the lable. This has to be done in case it is used in production.
@@ -739,8 +739,8 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
 					if(!ReceivedJWTMsg.getPrev().equals(null)) {
 						for(int i=0; i<ReceivedJWTMsg.getPrev().length;i++) {
 							
-							System.out.println("Before Cleaning "+ReceivedJWTMsg.getPrev()[i]);
-							System.out.println("After Cleaning "+m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getPrev()[i]));
+							//System.out.println("Before Cleaning "+ReceivedJWTMsg.getPrev()[i]);
+							//System.out.println("After Cleaning "+m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getPrev()[i]));
 							if(!pulledAuditRecs.contains(m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getPrev()[i]))) {//Here is where things are going wrong.
 								System.out.println("Prev Previous record "+ReceivedJWTMsg.getPrev()[i]+ " is not valid in the message");
 								return false;

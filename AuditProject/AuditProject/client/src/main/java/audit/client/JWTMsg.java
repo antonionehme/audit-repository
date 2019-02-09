@@ -224,7 +224,7 @@ public class JWTMsg {
 
 				// Serialise to JWT compact form
 				String jwtString = jwtAudit.serialize();
-				System.out.println("Encrypted JWT: "+jwtString);
+				//System.out.println("Encrypted JWT: "+jwtString);
 				return jwtString;
 					}
 		
@@ -285,7 +285,7 @@ public class JWTMsg {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Decrypted "+ RecoveredJWT.getJWTClaimsSet());
+		//System.out.println("Decrypted "+ RecoveredJWT.getJWTClaimsSet());
 		return RecoveredJWT.getJWTClaimsSet().toString();
 		}
 		
@@ -359,7 +359,7 @@ public static String[] encrypt_long(ArrayList<String> plainText, PublicKey publi
 	String[] Enc_block=new String[plainText.size()];
 	for (int i = 0; i < plainText.size(); i++) {
 		Enc_block[i]=encrypt(plainText.get(i), publicKey);
-		System.out.println(Enc_block[i]);
+		//System.out.println(Enc_block[i]);
 	}
 	
 	return Enc_block;
@@ -370,7 +370,7 @@ public static String[] decrypt_long(String[] encyptedArray, PrivateKey privateKe
 	String[] decryptedArray=new String[encyptedArray.length];
 	for (int i = 0; i < encyptedArray.length; i++) {
 		decryptedArray[i]=decrypt(encyptedArray[i], privateKey).trim();
-		System.out.println(decryptedArray[i]);
+		//System.out.println(decryptedArray[i]);
 	}
 	
 	return decryptedArray;

@@ -84,6 +84,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
 	  private static String name= "Participant 1";
 	  
     public static void main(String args[]) throws Exception, IOException {
+    	publishAddress("key.pub", "Antonio Nehme");//publishAddress("key.pub", "Antonio Nehme");
+        
     	JWTMsg msg=new JWTMsg("Data", "Issuer", "Recipient", "Label", new String[] {"Prev1", "Prev2"}, new String[] {"ParaPrev1", "ParaPrev2"});
     	JWTMsg msg2=new JWTMsg(msg.Plain_JWT(msg));
     	System.out.println("First: "+msg.Plain_JWT(msg));
@@ -231,9 +233,9 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         //Time this 
         String file_send = "data_send.csv";
     	FileWriter fileWriter = new FileWriter(file_send,true);
-    	long startTime = System.nanoTime();
+    	long startTime = System.currentTimeMillis();
         sendMessageToParticipant("http://localhost:8102/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
-        long endTime = System.nanoTime();long duration = (endTime - startTime);
+        long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
         fileWriter.append(name+","+duration+","+"\n");
     	fileWriter.flush();
         fileWriter.close();
@@ -575,7 +577,7 @@ pullAudits();// Verify that tthe audit record shows on the audit server/
         in.close();
         //print in String
         String ResponseStr=response.toString();
-        System.out.println(ResponseStr);
+       // System.out.println(ResponseStr);
         //Now, I need to parse the response, if it is not empty
         
         if(!ResponseStr.equals("[]")) {
@@ -634,7 +636,7 @@ pullAudits();// Verify that tthe audit record shows on the audit server/
     
     private static byte[] calculateLocalHash() {
         String hashableData = ArrayListtoString(getStoredAuditRecs());
-        System.out.println("hashableData "+ hashableData);
+       // System.out.println("hashableData "+ hashableData);
         return DigestUtils.sha256(hashableData);
     }
     
