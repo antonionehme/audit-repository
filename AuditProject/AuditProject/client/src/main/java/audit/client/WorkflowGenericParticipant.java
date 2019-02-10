@@ -727,16 +727,17 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
 			//If this record has been reported, then:
 				JWTMsg ReceivedJWTMsg=new JWTMsg(receivedMsg);
 				if(ReceivedJWTMsg.getLabel().equalsIgnoreCase("ini")) {
-					if(pulledAuditRecs.size()==1) return true;
+					if(pulledAuditRecs.size()==1) {System.out.println("EncryptedAuditRecordverification Passed");
+						return true;}
 				}
 				if(ReceivedJWTMsg.getLabel().equalsIgnoreCase("ini,parallel")){
 					for(int i=0; i<pulledAuditRecsReportingTime.size()-1; i++) {
 						if(pulledAuditRecsReportingTime.get(i)-pulledAuditRecsReportingTime.get(i+1)>epsilon) return false;
-					}return true;
+					} return true;
 				}
 				if(ReceivedJWTMsg.getPrev().equals(null)&&ReceivedJWTMsg.getParaPrev().equals(null))return false;
 				else {
-					if(!ReceivedJWTMsg.getPrev().equals(null)) {
+					if(ReceivedJWTMsg.getPrev().length!=0) {//if(!ReceivedJWTMsg.getPrev().equals(null)) {
 						for(int i=0; i<ReceivedJWTMsg.getPrev().length;i++) {
 							
 							//System.out.println("Before Cleaning "+ReceivedJWTMsg.getPrev()[i]);
@@ -747,7 +748,7 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
 							}
 						}
 					}
-					if(!ReceivedJWTMsg.getParaPrev().equals(null)) {
+					if(ReceivedJWTMsg.getParaPrev().length!=0) {//if(!ReceivedJWTMsg.getParaPrev().equals(null)) {
 						for(int i=0; i<ReceivedJWTMsg.getParaPrev().length; i++) {
 							if(!pulledAuditRecs.contains(m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getParaPrev()[i]))) {
 								System.out.println("ParaPrev Previous record "+ ReceivedJWTMsg.getParaPrev()[i]+ " is not valid in the message");
