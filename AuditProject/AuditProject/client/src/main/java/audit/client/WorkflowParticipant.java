@@ -76,6 +76,7 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
 	  static private final String clientpassphrase = "clientpw";
 	  static private final String serverpassphrase = "serverpw";
 	  private static List<String> pulledAuditRecs = new ArrayList<>(); 
+	  private static List<String> AuditRecsforReceivedMessages = new ArrayList<>();
 	  private static List<Long> pulledAuditRecsReportingTime = new ArrayList<>();
 	  private static Long mostRecentReportingTime;//of an audit record by any participant
 	  private static String mostRecentAuditRecord; //published on the audit server by any participant. THis is because elements in a hashmap are not in order.
@@ -734,7 +735,7 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
 			if(!pulledAuditRecs.contains(VerifyAudit)) {System.out.println("Audit Record Verification Failure. "+"Audit Record of the message that you received was not reported.");
 			return false;
 			}
-			else{
+			else{AuditRecsforReceivedMessages.add(VerifyAudit);// adding the equivalent audit record to the storage of the participant for future use
 			//If this record has been reported, then:
 				JWTMsg ReceivedJWTMsg=new JWTMsg(receivedMsg);
 				if(ReceivedJWTMsg.getLabel().equalsIgnoreCase("ini")) {

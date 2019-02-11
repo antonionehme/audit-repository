@@ -76,6 +76,7 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
 	  static private final String clientpassphrase = "clientpw";
 	  static private final String serverpassphrase = "serverpw";
 	  private static List<String> pulledAuditRecs = new ArrayList<>(); 
+	  private static List<String> AuditRecsforReceivedMessages = new ArrayList<>();
 	  private static List<Long> pulledAuditRecsReportingTime = new ArrayList<>();
 	  private static Long mostRecentReportingTime;//of an audit record by any participant
 	  private static String mostRecentAuditRecord; //published on the audit server by any participant. THis is because elements in a hashmap are not in order.
@@ -321,7 +322,8 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         Random rand = new Random();
         int n = rand.nextInt(500000) + 1;
         String dummyData = "Data"+n+""+System.currentTimeMillis();
-        JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+        //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+        JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});
         
     	FileWriter fileWriter = new FileWriter(file_send,true);
     	long startTime = System.currentTimeMillis();
@@ -601,6 +603,14 @@ pullAudits();// Verify that tthe audit record shows on the audit server/
     	
     }
     
+    public static String[] ArraylistToArray(List<String> list) { //I think this is what is shuffling the elements
+    	String[] temp = new String[list.size()];
+    	temp = list.toArray(temp);
+
+    	return temp;
+    	
+    }
+    
 
     public static String ArrayListtoString(List<String> strList) {
 	String combine="";
@@ -723,7 +733,7 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
 			if(!pulledAuditRecs.contains(VerifyAudit)) {System.out.println("Audit Record Verification Failure. "+"Audit Record of the message that you received was not reported.");
 			return false;
 			}
-			else{
+			else{ AuditRecsforReceivedMessages.add(VerifyAudit);// adding the equivalent audit record to the storage of the participant for future use
 			//If this record has been reported, then:
 				JWTMsg ReceivedJWTMsg=new JWTMsg(receivedMsg);
 				if(ReceivedJWTMsg.getLabel().equalsIgnoreCase("ini")) {
