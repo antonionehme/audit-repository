@@ -83,7 +83,7 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
 	  private static String mostRecentReportedLocalHash;// LocalHash Values Reported by other clients to the audit server.
 	  private static Long epsilon=(long) 100.0;
 	  // These are added for the command line options
-	  static String file_send = "data_send.csv"; static String file_recieve = "data_recieve.csv";
+	  static String file_send = "data_send.csv"; static String file_recieve = "data_receive.csv";
 	  private static String addresstoPublish="";
 	  private static String port="";
 	  private static String name="";
@@ -317,8 +317,9 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         }break;
         case "4": {System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
        // publishAuditRecord("key.priv",postedAuditRecs.get(0),"HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
-        pullAudits();//Added; not essential
-        TimeUnit.SECONDS.sleep(1); 
+        
+       // pullAudits();//Added; not essential<<<<<================================================Removed the pulls
+        //TimeUnit.SECONDS.sleep(1); 
         Random rand = new Random();
         int n = rand.nextInt(500000) + 1;
         String dummyData = "Data"+n+""+System.currentTimeMillis();
