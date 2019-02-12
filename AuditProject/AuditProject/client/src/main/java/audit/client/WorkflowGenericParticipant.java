@@ -132,15 +132,18 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
 
         String p = line.getOptionValue("port");
         String n = line.getOptionValue("name");
-      //  String r= line.getOptionValue("recipient");
+        String rp= line.getOptionValue("recipientPort");
         if (port == null || name == null) {
             throw new ParseException("Missing Arguments");
         }
         port=p;
         name=n;
-        int i = Integer.parseInt(port.trim());
-        i=i+1;
-        recipientPort=""+i;
+        if (recipientPort.equals("")) {
+        	int i = Integer.parseInt(port.trim());
+            i=i+1;
+            recipientPort=""+i;
+        }
+        else recipientPort= rp;
         //publishTransaction(new URL(node), Paths.get(privatekey), message, Base64.decodeBase64(sender), "This is the Local Hash");
     
 }
@@ -162,6 +165,12 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
                 .hasArg()
                 .argName("name of the sender")
                 .desc("needed to recognize the sender- publish name on the server- print on receipt")
+                .build());
+        options.addOption(Option.builder("rp")
+                .longOpt("recipientPort")
+                .hasArg()
+                .argName("recipientPort")
+                .desc("For recipientPort")
                 .build());
         
 
