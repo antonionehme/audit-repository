@@ -11,15 +11,15 @@ import audit.server.service.TransactionService;
 
 
 @SpringBootApplication
-public class BlockchainNode extends TransactionService {
+public class AuditNode extends TransactionService {
 
-	public BlockchainNode(AddressService addressService) {//Had to add this.
+	public AuditNode(AddressService addressService) {//Had to add this.
 		super(addressService);
 		// TODO Auto-generated constructor stub
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(BlockchainNode.class, args);
+		SpringApplication.run(AuditNode.class, args);
 		SimulateMalitiousBehaviour();
 	}
 	

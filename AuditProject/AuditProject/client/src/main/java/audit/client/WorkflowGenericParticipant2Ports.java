@@ -83,7 +83,7 @@ public class WorkflowGenericParticipant2Ports {//Added the extension hoping to g
 	  private static String mostRecentReportedLocalHash;// LocalHash Values Reported by other clients to the audit server.
 	  private static Long epsilon=(long) 100.0;
 	  // These are added for the command line options
-	  static String file_send = "data_send.csv"; static String file_recieve = "data_recieve.csv";
+	  static String file_send = "data_send.csv"; static String file_recieve = "data_receive.csv";
 	  private static String addresstoPublish="";
 	  private static String port="";
 	  private static String name="";
@@ -237,7 +237,7 @@ public class WorkflowGenericParticipant2Ports {//Added the extension hoping to g
               msgPool.add(message);
          
         long endTime_recieve = System.currentTimeMillis(); long duration_recieve = (endTime_recieve - startTime_recieve);
-        fileWriter_recieve.append(name+","+duration_recieve+"\n");
+        fileWriter_recieve.append(name+ " to "+recipientPort +","+duration_recieve+"\n");
         fileWriter_recieve.flush();
         fileWriter_recieve.close();
              
@@ -339,7 +339,7 @@ public class WorkflowGenericParticipant2Ports {//Added the extension hoping to g
         sendMessageToParticipant("http://localhost:"+recipientPort+"/node?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
        
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+","+duration+"\n");
+        fileWriter.append(name+ " to "+recipientPort +","+duration+"\n");
     	fileWriter.flush();
         fileWriter.close();
         	option=scan.nextLine();
