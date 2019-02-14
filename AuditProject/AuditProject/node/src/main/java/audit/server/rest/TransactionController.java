@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 
 @RestController()
@@ -37,8 +38,18 @@ public class TransactionController {
      * Retrieve all Transactions, which aren't in a block yet
      * @return JSON list of Transactions
      */
-    @RequestMapping
+    /*   @RequestMapping==> Old method with no delay
     List<Transaction> getTransactionPool() {
+        return transactionService.getTransactionPool();
+    }*/
+    
+    @RequestMapping
+    List<Transaction> getTransactionPool() {/* try {
+		TimeUnit.SECONDS.sleep(5);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} */
         return transactionService.getTransactionPool();
     }
 

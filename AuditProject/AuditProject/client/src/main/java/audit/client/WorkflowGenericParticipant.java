@@ -89,7 +89,10 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
 	  private static String name="";
 	  private static String recipientPort= "";
 	  
-    public static void main(String args[]) throws Exception {
+    public static void main(String args[]) throws Exception { 
+        
+    	
+    	
     	/*String str="s1vjwh1gQl1scMrAFkM0KDV2E9m7hr7+oW2P1OCfVSk7NIEE9d\\/jPB2c\\/QV9QtMmpOqXl0\\/rIMEvaCSSO7+kM1gpScdW4b88V0HogFvbZbE91A9IwrOpz5qJCzWNd9H\\/zdVbv6AI4AS1AXInZMcuKjZukSQxCHUXuzO34GB445Ypti5mcyrnphW20nagBs\\/kPcYYAtEszb0MxkOpq2YSdw2lU\\/O\\/fO7qFz0Qruj3BlpuVXIrJ64s4R0rjMr9fLUenlHTgTEqKZDql+gwZT48IahtxAztwENa01rvJz2reWFluhlIJMeN6e2ZIT3JMvWUh6pOBgy\\/pINQmgqpd\\/pBbg==";
     	System.out.println("After Cleaning "+str.replaceAll("\\\\/", "/"));
     	
@@ -117,6 +120,10 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         app.setDefaultProperties(pro);
         app.run(args);
         
+        
+        /*URL url = new URL("http://localhost:8080/transaction");
+    	HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    	connection.connect();*/
     	
         //SendingandVerifyingMessagesandAuditRecs();
        // SendingandVerifyingMessagesandAuditRecsWithKeyFiles(Paths.get("client.priv"),Paths.get("client.public"),Paths.get("key.private"),Paths.get("key.pub"));
@@ -138,12 +145,20 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         }
         port=p;
         name=n;
-        if (recipientPort.equals("")) {
+        if(rp==null) {System.out.println("No Recipient Port set in Args. Going with the default RP.");
+        int i = Integer.parseInt(port.trim());
+        i=i+1;
+        recipientPort=""+i;
+        }
+        else recipientPort= rp;
+
+        
+        /*if (recipientPort.equals("")) {
         	int i = Integer.parseInt(port.trim());
             i=i+1;
             recipientPort=""+i;
         }
-        else recipientPort= rp;
+        else recipientPort= rp;*/
         //publishTransaction(new URL(node), Paths.get(privatekey), message, Base64.decodeBase64(sender), "This is the Local Hash");
     
 }
@@ -341,7 +356,7 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
        
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+","+duration+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
     	fileWriter.flush();
         fileWriter.close();
         	option=scan.nextLine();
@@ -763,7 +778,7 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
 							//System.out.println("Before Cleaning "+ReceivedJWTMsg.getPrev()[i]);
 							//System.out.println("After Cleaning "+m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getPrev()[i]));
 							if(!pulledAuditRecs.contains(m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getPrev()[i]))) {//Here is where things are going wrong.
-								System.out.println("Prev Previous record "+ReceivedJWTMsg.getPrev()[i]+ " is not valid in the message");
+								System.out.println("Prev Previous record "+m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getPrev()[i])+ " is not valid in the message");
 								return false;
 							}
 						}
@@ -771,7 +786,7 @@ for (int i = 0; i < getPostedAuditRecs().size(); i++) {
 					if(ReceivedJWTMsg.getParaPrev().length!=0) {//if(!ReceivedJWTMsg.getParaPrev().equals(null)) {
 						for(int i=0; i<ReceivedJWTMsg.getParaPrev().length; i++) {
 							if(!pulledAuditRecs.contains(m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getParaPrev()[i]))) {
-								System.out.println("ParaPrev Previous record "+ ReceivedJWTMsg.getParaPrev()[i]+ " is not valid in the message");
+								System.out.println("ParaPrev Previous record "+ m.CleanReceivedPrevForVerification(ReceivedJWTMsg.getParaPrev()[i])+ " is not valid in the message");
 								return false;
 							}
 						}

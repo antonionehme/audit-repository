@@ -237,7 +237,7 @@ public class WorkflowGenericParticipant2Ports {//Added the extension hoping to g
               msgPool.add(message);
          
         long endTime_recieve = System.currentTimeMillis(); long duration_recieve = (endTime_recieve - startTime_recieve);
-        fileWriter_recieve.append(name+ " to "+recipientPort +","+duration_recieve+"\n");
+        fileWriter_recieve.append(name+ " Receiving"+","+duration_recieve+"\n");
         fileWriter_recieve.flush();
         fileWriter_recieve.close();
              
