@@ -315,7 +315,7 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
            break;*/
         case "0" :{
         publishAddress("key.pub", name);//publishAddress("key.pub", "Antonio Nehme");
-        System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
+        System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
         option=scan.nextLine();}
         break; 
         case "1" :{
@@ -329,18 +329,18 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         	System.out.println("pulledAuditRecs "+pulledAuditRecs+" getStoredAuditRecs "+getStoredAuditRecs()+" getPostedAuditRecs "+getPostedAuditRecs());
         	if(pulledAuditRecs.equals(getStoredAuditRecs()))System.out.println("pulledAuditRecs and etStoredAuditRecs() are equal");
         	System.out.println("Arrays.toString(calculateLocalHash()) "+ Arrays.toString(calculateLocalHash()));
-        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
-        	option=scan.nextLine();}
+        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+            option=scan.nextLine();}
         break;
         case "3": {
         	System.out.println("Add your message: "); String msg= scan.nextLine();
         System.out.println("Add your Address: "); String address= scan.nextLine();
         	publishAuditRecord("key.priv",msg,address);//
-        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
-        	option=scan.nextLine();
+        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+            option=scan.nextLine();
         }break;
-        case "4": {System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
-       // publishAuditRecord("key.priv",postedAuditRecs.get(0),"HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+        case "4": {System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+        // publishAuditRecord("key.priv",postedAuditRecs.get(0),"HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
         
        // pullAudits();//Added; not essential<<<<<================================================Removed the pulls
         //TimeUnit.SECONDS.sleep(1); 
@@ -361,6 +361,30 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         fileWriter.close();
         	option=scan.nextLine();
         }break;
+        
+        case "5": {System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+        // pullAudits();//Added; not essential<<<<<================================================Removed the pulls
+         //TimeUnit.SECONDS.sleep(1); 
+        System.out.println("Enter Recipient Port: "); String Recipient= scan.nextLine();
+        recipientPort=Recipient;
+        
+         Random rand = new Random();
+         int n = rand.nextInt(500000) + 1;
+         String dummyData = "Data"+n+""+System.currentTimeMillis();
+         //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+         JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});
+         
+     	FileWriter fileWriter = new FileWriter(file_send,true);
+     	long startTime = System.currentTimeMillis();
+     	
+         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+        
+         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
+         fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
+     	fileWriter.flush();
+         fileWriter.close();
+         	option=scan.nextLine();
+         }break;
         
         default :{
            System.out.println("Invalid Option");

@@ -82,7 +82,9 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
 	  private static String mostRecentAuditRecord; //published on the audit server by any participant. THis is because elements in a hashmap are not in order.
 	  private static String mostRecentReportedLocalHash;// LocalHash Values Reported by other clients to the audit server.
 	  private static Long epsilon=(long) 100.0;
-	  private static String name= "Participant 1";
+	  static String file_send = "data_send.csv"; static String file_recieve = "data_receive.csv";
+	  private static String name= "Participant1";
+	  private static String recipientPort= "8102";
 	  
     public static void main(String args[]) throws Exception, IOException {
     	publishAddress("key.pub", "Antonio Nehme");//publishAddress("key.pub", "Antonio Nehme");
@@ -163,8 +165,20 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
        */
       public synchronized boolean add(String message) throws Exception { //This is the method for a participant to receive a message.
     	  
-    	  EncryptedAuditRecordverification(message,"client2");
+    	  /*EncryptedAuditRecordverification(message,"client2");
+              msgPool.add(message);*/
+    	  System.out.println("_____________Message Received by "+ name );
+     	 
+    	  FileWriter fileWriter_recieve = new FileWriter(file_recieve,true);
+      	long startTime_recieve = System.currentTimeMillis();
+      	
+    	  boolean verif=EncryptedAuditRecordverification(message,"client2");//Here's where the problem is. When this is commented, the message gets received.
               msgPool.add(message);
+         
+        long endTime_recieve = System.currentTimeMillis(); long duration_recieve = (endTime_recieve - startTime_recieve);
+        fileWriter_recieve.append(name+","+duration_recieve+"\n");
+        fileWriter_recieve.flush();
+        fileWriter_recieve.close();
               //Here, we trigger the audit rec verification.
               return true;
          
@@ -206,7 +220,7 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         case "1" :{
         	AuditServerVerificartion();
             System.out.println(getStoredAuditRecs());
-            System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
+            System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
             option=scan.nextLine();}
             break;
         case "2" :{ 
@@ -214,17 +228,17 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         	System.out.println("pulledAuditRecs "+pulledAuditRecs+" getStoredAuditRecs "+getStoredAuditRecs()+" getPostedAuditRecs "+getPostedAuditRecs());
         	if(pulledAuditRecs.equals(getStoredAuditRecs()))System.out.println("pulledAuditRecs and etStoredAuditRecs() are equal");
         	System.out.println("Arrays.toString(calculateLocalHash()) "+ Arrays.toString(calculateLocalHash()));
-        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
-        	option=scan.nextLine();}
+        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+            option=scan.nextLine();}
         break;
         case "3": {
         	System.out.println("Add your message: "); String msg= scan.nextLine();
         System.out.println("Add your Address: "); String address= scan.nextLine();
         	publishAuditRecord("key.priv",msg,address);//
-        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
-        	option=scan.nextLine();
+        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+            option=scan.nextLine();
         }break;
-        case "4": {System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, X to exit.");
+        case "4": {System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
         publishAuditRecord("key.priv","Prev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
         publishAuditRecord("key.priv","Prev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
         publishAuditRecord("key.priv","ParaPrev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
@@ -232,18 +246,52 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
        
         JWTMsg msg=new JWTMsg("Data", "Issuer", "Recipient", "Label", new String[] {"Prev1", "Prev2"}, new String[] {"ParaPrev1", "ParaPrev2"});
         //Time this 
-        String file_send = "data_send.csv";
+        
     	FileWriter fileWriter = new FileWriter(file_send,true);
     	long startTime = System.currentTimeMillis();
         //sendMessageToParticipant("http://localhost:8102/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
-        sendMessageToParticipant("http://localhost:8102/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+        sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+","+duration+","+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
+        /*///////////
+        long startTime2 = System.currentTimeMillis();
+        //sendMessageToParticipant("http://localhost:8102/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+        sendMessageToParticipant("http://localhost:8103/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+        
+        long endTime2 = System.currentTimeMillis();long duration2 = (endTime2 - startTime2);
+        fileWriter.append(name+","+duration2+","+"\n");
+        ///////////////////*/
+        
+        
     	fileWriter.flush();
         fileWriter.close();
         	option=scan.nextLine();
         }break;
+        
+        case "5": {System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+         pullAudits();//Added; not essential<<<<<================================================Removed the pulls
+         //TimeUnit.SECONDS.sleep(1); 
+        System.out.println("Enter Recipient Port: "); String Recipient= scan.nextLine();
+        recipientPort=Recipient;
+        
+         Random rand = new Random();
+         int n = rand.nextInt(500000) + 1;
+         String dummyData = "Data"+n+""+System.currentTimeMillis();
+         //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+         JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+         
+     	FileWriter fileWriter = new FileWriter(file_send,true);
+     	long startTime = System.currentTimeMillis();
+     	
+         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+        
+         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
+         fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
+     	fileWriter.flush();
+         fileWriter.close();
+         	option=scan.nextLine();
+         }break;
         
         default :{
            System.out.println("Invalid Option");
@@ -387,6 +435,7 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
     private static void sendHTTPMessage(String URL, String message) { //This is to send messages from one participant to another. An audit record has to go in parallel with this action. 
     	//Messages have to be encrypted with the recipient's public key, and audit records with the workflow's public key.
         RestTemplate restTemplate = new RestTemplate();
+      //  restTemplate.
         restTemplate.postForLocation(URL, message);
         
        // byte[] signature = SignatureUtils.sign(text.getBytes(), Files.readAllBytes(privateKey));
