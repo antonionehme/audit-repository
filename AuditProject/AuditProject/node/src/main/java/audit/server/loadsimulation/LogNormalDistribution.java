@@ -33,7 +33,7 @@ import audit.server.loadsimulation.Math;
  */
 public class LogNormalDistribution extends AbstractDistribution {
 	public static void main(String[]args) {
-		double [] data = new double [] {1.5,55.5};
+		double [] data = new double [] {663, 727, 776, 788, 837, 856, 894, 921, 1027, 1072, 1166, 1370, 1577, 1979, 2447, 3056, 4173, 5732, 8229, 11296, 17917, 25845, 40010, 78225, 109606, 209972, 334382, 627953, 1213510, 1865113};
 		LogNormalDistribution lnd= new LogNormalDistribution(data);
 		System.out.println(lnd.toString());
 	}

@@ -1,6 +1,6 @@
 package audit.server.rest;
 
-
+import audit.server.loadsimulation.lognormaldelay;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +44,12 @@ public class TransactionController {
     }*/
     
     @RequestMapping
-    List<Transaction> getTransactionPool() {/* try {
-		TimeUnit.SECONDS.sleep(5);
+    List<Transaction> getTransactionPool() { try { System.out.println("Delay");
+		TimeUnit.SECONDS.sleep((long)lognormaldelay.delay(5,10));
 	} catch (InterruptedException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-	} */
+	} 
         return transactionService.getTransactionPool();
     }
 
