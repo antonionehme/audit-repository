@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c)
+ * Copyright (c) 2010 Haifeng Li
  *   
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package audit.server.loadsimulation;
+package audit.client.loadsimulation;
 
-import audit.server.loadsimulation.Erf;
-import audit.server.loadsimulation.Math;
+import audit.client.loadsimulation.Erf;
+import audit.client.loadsimulation.Math;
 
 /**
  * A log-normal distribution is a probability distribution of a random variable
@@ -36,6 +36,7 @@ public class LogNormalDistribution extends AbstractDistribution {
 		double [] data = new double [] {663, 727, 776, 788, 837, 856, 894, 921, 1027, 1072, 1166, 1370, 1577, 1979, 2447, 3056, 4173, 5732, 8229, 11296, 17917, 25845, 40010, 78225, 109606, 209972, 334382, 627953, 1213510, 1865113};
 		LogNormalDistribution lnd= new LogNormalDistribution(data);
 		System.out.println(lnd.toString());
+		System.out.println("Z "+lnd.rand());
 	}
 	
     private static final long serialVersionUID = 1L;

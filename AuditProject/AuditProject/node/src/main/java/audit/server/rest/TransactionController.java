@@ -1,6 +1,7 @@
 package audit.server.rest;
 
 import audit.server.loadsimulation.lognormaldelay;
+import audit.server.AuditNode;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +45,10 @@ public class TransactionController {
     }*/
     
     @RequestMapping
-    List<Transaction> getTransactionPool() { try { System.out.println("Delay");
-		TimeUnit.SECONDS.sleep((long)lognormaldelay.delay(5,10));
+    List<Transaction> getTransactionPool() { try { long del=(long)lognormaldelay.delay(0,0);System.out.println("Delay for "+ del);
+    System.out.format("%,8d%n", del);
+	//	TimeUnit.SECONDS.sleep(del); 
+		TimeUnit.MILLISECONDS.sleep(del);
 	} catch (InterruptedException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -76,6 +79,11 @@ public class TransactionController {
         } else {
             response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }
+    }
+    
+    @RequestMapping(method = RequestMethod.DELETE)
+    void clean(){
+    	AuditNode.removeAll();
     }
 
 }

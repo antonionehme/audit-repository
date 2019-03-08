@@ -56,7 +56,7 @@ import audit.client.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.Random;
-
+import audit.client.loadsimulation.LogNormalbasedDelayGeneration;
 
 
 /**
@@ -83,11 +83,16 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
 	  private static String mostRecentReportedLocalHash;// LocalHash Values Reported by other clients to the audit server.
 	  private static Long epsilon=(long) 100.0;
 	  // These are added for the command line options
-	  static String file_send = "data_send.csv"; static String file_recieve = "data_receive.csv";
+	  static String file_send = "data_send.csv"; 
+	  //static String file_recieve = "data_receive.csv"; 
+	  static String file_combo = "data_combo.csv"; 
 	  private static String addresstoPublish="";
 	  private static String port="";
 	  private static String name="";
 	  private static String recipientPort= "";
+	  static String file_recieve = "data_receive.csv"; 
+      static double constant = 1;
+      static double mu=0; static double sigma=0;
 	  
     public static void main(String args[]) throws Exception { 
         
@@ -247,25 +252,37 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
     	  System.out.println("_____________Message Received by "+ name );
     	 
     	  FileWriter fileWriter_recieve = new FileWriter(file_recieve,true);
+    	//  FileWriter fileWriter_combo = new FileWriter(file_combo,true);
       	long startTime_recieve = System.currentTimeMillis();
       	
     	  boolean verif=EncryptedAuditRecordverification(message,"client2");//Here's where the problem is. When this is commented, the message gets received.
               msgPool.add(message);
-         
-        long endTime_recieve = System.currentTimeMillis(); long duration_recieve = (endTime_recieve - startTime_recieve);
-        fileWriter_recieve.append(name+","+duration_recieve+"\n");
-        fileWriter_recieve.flush();
-        fileWriter_recieve.close();
+
+         double delay=LogNormalbasedDelayGeneration.simulate_delay_time(constant, mu, sigma);
+        		 
+         long endTime_recieve = System.currentTimeMillis(); long duration_recieve = (endTime_recieve - startTime_recieve);//+(long)delay;
+         //long duration_recieve_with_delay=(endTime_recieve - startTime_recieve)+(long)delay;
+         //fileWriter_recieve.append(name+","+duration_recieve+","+duration_recieve_with_delay+"\n");
+         fileWriter_recieve.append(name+","+duration_recieve+"\n");
+        //fileWriter_combo.append(name+","+duration_recieve+"\n");
+        
+        fileWriter_recieve.flush();//fileWriter_combo.flush();
+        fileWriter_recieve.close();//fileWriter_combo.close();
              
               //Here, we trigger the audit rec verification. Added to automate the simulation.
               ///////////////////////////////////////This is case 4 //////////////////////////////////////
-             /* pullAudits();//Added; not essential
-              TimeUnit.SECONDS.sleep(1);
+        		//may need to clean() here.
+        		//check port number.
+        
+        /* Begin Comment to test if code still works for proof of concept
+        if(!port.equals("8105")) {
+              pullAudits();//Added; not essential
+             // TimeUnit.SECONDS.sleep(1);
               Random rand = new Random();
               int n = rand.nextInt(500000) + 1;
               String dummyData = "Data"+n+""+System.currentTimeMillis();
 
-              JWTMsg msg=new JWTMsg(dummyData, "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+              JWTMsg msg=new JWTMsg(dummyData, "Issuer", "Recipient", "Label", new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1"});
               
           	FileWriter fileWriter_send = new FileWriter(file_send,true);
           	long startTime_send = System.currentTimeMillis();
@@ -273,9 +290,24 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
               sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
              
               long endTime_send = System.currentTimeMillis();long duration_send = (endTime_send - startTime_send);
-              fileWriter_send.append(name+","+duration_send+"\n");// this becomes like a loop...
+              
+             // fileWriter_send.append(name+ " to "+recipientPort+","+duration_send+"\n");// this becomes like a loop...
+              fileWriter_send.append(name+ " to "+recipientPort+","+duration_send+"\n");
+              
               fileWriter_send.flush();
-              fileWriter_send.close();*/
+              fileWriter_send.close();
+             //fileWriter_combo.flush();
+              //fileWriter_combo.close();
+              clean();
+        } else {
+            RestTemplate restTemplate = new RestTemplate();
+             restTemplate.delete("http://localhost:8080/transaction");
+             //TimeUnit.SECONDS.sleep(3);
+             //RestTemplate restTemplate2 = new RestTemplate();
+             //restTemplate2.delete("http://localhost:8101/startfresh");
+             
+             //restTemplate.
+        }*/
               //Not having the chance to close
               
 //////////////////////////////////////end of Case 4//////////////////////////////////////
@@ -327,7 +359,8 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         case "2" :{ 
         	System.out.println("mostRecentReportingTime "+mostRecentReportingTime+" mostRecentAuditRecord "+ mostRecentAuditRecord+ " mostRecentReportedLocalHash "+ mostRecentReportedLocalHash);
         	System.out.println("pulledAuditRecs "+pulledAuditRecs+" getStoredAuditRecs "+getStoredAuditRecs()+" getPostedAuditRecs "+getPostedAuditRecs());
-        	if(pulledAuditRecs.equals(getStoredAuditRecs()))System.out.println("pulledAuditRecs and etStoredAuditRecs() are equal");
+        	if(pulledAuditRecs.equals(getStoredAuditRecs()))System.out.println("pulledAuditRecs and StoredAuditRecs() are equal");
+        	System.out.println("Equivalent AuditRecsforReceivedMessages"+AuditRecsforReceivedMessages);
         	System.out.println("Arrays.toString(calculateLocalHash()) "+ Arrays.toString(calculateLocalHash()));
         	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
             option=scan.nextLine();}
@@ -385,6 +418,35 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
          fileWriter.close();
          	option=scan.nextLine();
          }break;
+         
+        case "6": {clean();
+        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+       
+        
+        // publishAuditRecord("key.priv",postedAuditRecs.get(0),"HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+        
+       // pullAudits();//Added; not essential<<<<<================================================Removed the pulls
+        //TimeUnit.SECONDS.sleep(1); 
+        Random rand = new Random();
+        int n = rand.nextInt(500000) + 1;
+        String dummyData = "Data"+n+""+System.currentTimeMillis();
+        //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+        JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});
+        
+    	FileWriter fileWriter = new FileWriter(file_send,true);
+    	long startTime = System.currentTimeMillis();
+    	
+        sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+       
+        long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
+        fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
+    	fileWriter.flush();
+        fileWriter.close();
+        
+        clean();
+        	option=scan.nextLine();
+        }break;
+         
         
         default :{
            System.out.println("Invalid Option");
@@ -393,6 +455,54 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         }
      
   }
+      
+      
+      public static void clean() {
+      	/*
+    	  private static Long mostRecentReportingTime;//of an audit record by any participant
+    	  private static String mostRecentAuditRecord; //published on the audit server by any participant. THis is because elements in a hashmap are not in order.
+    	  private static String mostRecentReportedLocalHash;// LocalHash Values Reported by other clients to the audit server.
+     */
+      	pulledAuditRecs.clear();AuditRecsforReceivedMessages.clear();pulledAuditRecsReportingTime.clear();
+      	postedAuditRecs.clear();
+      }
+      
+      public static void Startfresh() throws Exception {clean();
+    	  //Added only to be used by participant 1
+      	//System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+        TimeUnit.SECONDS.sleep(1);System.out.println("Generic; recipientPort"+ recipientPort);
+      		publishAuditRecord("key.priv","Prev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+         // publishAuditRecord("key.priv","Prev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+          publishAuditRecord("key.priv","ParaPrev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+        //  publishAuditRecord("key.priv","ParaPrev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+          TimeUnit.SECONDS.sleep(1);
+          JWTMsg msg=new JWTMsg("Data", "Issuer", "Recipient", "Label", new String[] {"Prev1"}, new String[] {"ParaPrev1"});
+          //Time this 
+          
+      	FileWriter fileWriter = new FileWriter(file_send,true);
+          //FileWriter fileWriter_combo = new FileWriter(file_combo,true);
+      	long startTime = System.currentTimeMillis();
+          //sendMessageToParticipant("http://localhost:8102/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+          sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+          
+          long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
+          fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
+          //fileWriter_combo.append(name+ " to "+recipientPort+","+duration+","+"\n");
+          
+          /*///////////
+          long startTime2 = System.currentTimeMillis();
+          //sendMessageToParticipant("http://localhost:8102/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+          sendMessageToParticipant("http://localhost:8103/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+          
+          long endTime2 = System.currentTimeMillis();long duration2 = (endTime2 - startTime2);
+          fileWriter.append(name+","+duration2+","+"\n");
+          ///////////////////*/
+          
+          
+      	fileWriter.flush();//fileWriter_combo.flush();
+          fileWriter.close();//fileWriter_combo.close();
+          clean();
+      }
       
     public static void UseCommandLineOptions() {
    /* CommandLineParser parser = new DefaultParser();
