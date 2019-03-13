@@ -381,7 +381,12 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         int n = rand.nextInt(500000) + 1;
         String dummyData = "Data"+n+""+System.currentTimeMillis();
         //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
-        JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});
+       //Added to allow participant to send message without having to receive anything before(in case this should be considered.
+        JWTMsg msg;
+        if(AuditRecsforReceivedMessages.isEmpty()) {
+        	 msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {"Prev1"}, new String[] {"ParaPrev1", "ParaPrev2"});
+        }
+        else { msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});}
         
     	FileWriter fileWriter = new FileWriter(file_send,true);
     	long startTime = System.currentTimeMillis();
@@ -405,8 +410,14 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
          int n = rand.nextInt(500000) + 1;
          String dummyData = "Data"+n+""+System.currentTimeMillis();
          //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
-         JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});
+       //Added to allow participant to send message without having to receive anything before(in case this should be considered.
+         JWTMsg msg;
+         if(AuditRecsforReceivedMessages.isEmpty()) {
+         	 msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {"Prev1"}, new String[] {"ParaPrev1", "ParaPrev2"});
+         }
+         else { msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});}
          
+        
      	FileWriter fileWriter = new FileWriter(file_send,true);
      	long startTime = System.currentTimeMillis();
      	
