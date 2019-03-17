@@ -293,7 +293,19 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
          int n = rand.nextInt(500000) + 1;
          String dummyData = "Data"+n+""+System.currentTimeMillis();
          //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
-         JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+         JWTMsg msg;
+         if(AuditRecsforReceivedMessages.isEmpty()) {
+        	 publishAuditRecord("key.priv","Prev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+           //  publishAuditRecord("key.priv","Prev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+             publishAuditRecord("key.priv","ParaPrev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+             publishAuditRecord("key.priv","ParaPrev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+             
+         	 msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {"Prev1"}, new String[] {"ParaPrev1", "ParaPrev2"});
+         }
+         else { msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});}
+         
+         
+        // JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
          
      	FileWriter fileWriter = new FileWriter(file_send,true);
      	long startTime = System.currentTimeMillis();
@@ -353,6 +365,40 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         }
      
   }
+    
+    
+    public static void sendThroughURLCall(String Recipient) throws Exception { //added to be used later by an orchestrator to call participants. Problem is, we need to use a single controller, which means that the method in the generic one would be called (unless we do some trich from the orchestrator, like pre-publishing from there if possible.
+      	//We can add a flag in the request and a boolean here to let the orchestrator, knowing the first participant, require the participant to pre-publish.
+  	  recipientPort=Recipient;
+        
+        Random rand = new Random();
+        int n = rand.nextInt(500000) + 1;
+        String dummyData = "Data"+n+""+System.currentTimeMillis();
+        //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
+      //Added to allow participant to send message without having to receive anything before(in case this should be considered.
+        JWTMsg msg;
+        if(AuditRecsforReceivedMessages.isEmpty()) {
+        	 publishAuditRecord("key.priv","Prev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+             //  publishAuditRecord("key.priv","Prev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+               publishAuditRecord("key.priv","ParaPrev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+               publishAuditRecord("key.priv","ParaPrev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+               
+        	 msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {"Prev1"}, new String[] {"ParaPrev1", "ParaPrev2"});
+        }
+        else { msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});}
+        
+       
+    	FileWriter fileWriter = new FileWriter(file_send,true);
+    	long startTime = System.currentTimeMillis();
+    	
+        sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
+       
+        long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
+        fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
+    	fileWriter.flush();
+        fileWriter.close();
+    }
+    
     
     public static void clean() {
     	/*
@@ -703,6 +749,7 @@ pullAudits();// Verify that tthe audit record shows on the audit server/
         Files.write(Paths.get("key.pub"), keyPair.getPublic().getEncoded());
     }
 
+    
 
     
     public static void SetRecentAuditRecord(String mostRecentAuditRecordtemp, Long mostRecentReportingTimetemp, String mostRecentReportedLocalHashtemp) {
@@ -784,6 +831,13 @@ pullAudits();// Verify that tthe audit record shows on the audit server/
     	
     }
     
+    public static String[] ArraylistToArray(List<String> list) { //I think this is what is shuffling the elements
+    	String[] temp = new String[list.size()];
+    	temp = list.toArray(temp);
+
+    	return temp;
+    	
+    }
 
     public static String ArrayListtoString(List<String> strList) {
 	String combine="";
