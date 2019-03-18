@@ -73,5 +73,25 @@ public class MsgControllerGeneric {
 		 * response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE); }
 		 */
 	}
+	
+	@RequestMapping(value= "call", method = RequestMethod.POST)
+	void callParticipant(@RequestBody String port, @RequestParam(required = false) String first) throws Exception { // HttpServletResponse
+			//This has been added for an orchestrator to call participants while passing recipients. It is only used for Brite evaluation.																						// response)
+																											// {
+		// LOG.info("Add transaction " +
+		// Base64.encodeBase64String(transaction.getHash()));
+		msgService.sendThroughURLCall(port, first);//Had to throw exceptions after I added AuditRecordverification(message);
+
+		/*
+		 * if (success) { response.setStatus(HttpServletResponse.SC_ACCEPTED);
+		 * 
+		 * if (publish != null && publish) { // nodeService.broadcastPut("transaction",
+		 * transaction); } } else {
+		 * response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE); }
+		 */
+	}
+
+	
+	
 
 }

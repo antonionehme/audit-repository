@@ -367,15 +367,21 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
   }
     
     
-    public static void sendThroughURLCall(String Recipient) throws Exception { //added to be used later by an orchestrator to call participants. Problem is, we need to use a single controller, which means that the method in the generic one would be called (unless we do some trich from the orchestrator, like pre-publishing from there if possible.
+    public static void sendThroughURLCall(String RecipientPort, boolean first) throws Exception {//added to be used later by an orchestrator to call participants. Problem is, we need to use a single controller, which means that the method in the generic one would be called (unless we do some trich from the orchestrator, like pre-publishing from there if possible.
       	//We can add a flag in the request and a boolean here to let the orchestrator, knowing the first participant, require the participant to pre-publish.
-  	  recipientPort=Recipient;
+    	  recipientPort=RecipientPort;
         
         Random rand = new Random();
         int n = rand.nextInt(500000) + 1;
         String dummyData = "Data"+n+""+System.currentTimeMillis();
         //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
       //Added to allow participant to send message without having to receive anything before(in case this should be considered.
+        if (first) {//first participant to publish
+      	  publishAuditRecord("key.priv","Prev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+            //  publishAuditRecord("key.priv","Prev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+              publishAuditRecord("key.priv","ParaPrev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+              publishAuditRecord("key.priv","ParaPrev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+        }
         JWTMsg msg;
         if(AuditRecsforReceivedMessages.isEmpty()) {
         	 publishAuditRecord("key.priv","Prev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");

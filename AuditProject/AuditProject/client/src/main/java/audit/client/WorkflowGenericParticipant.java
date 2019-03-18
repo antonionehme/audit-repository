@@ -8,6 +8,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.api.client.util.Maps;
@@ -45,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import audit.common.SignatureUtils;
@@ -457,7 +463,39 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         clean();
         	option=scan.nextLine();
         }break;
-         
+        
+        case "test": {
+    	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+    	sendThroughURLCall("8104", "true");
+    	/*RestTemplate restTemplate = new RestTemplate();
+        
+        restTemplate.postForLocation("http://localhost:8103/participant/call", "8104");
+        */
+    	
+    	option=scan.nextLine();
+    }break;
+    
+        case "test2": {
+        	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
+        	 RestTemplate restTemplate = new RestTemplate();
+        	//String http://localhost:8101/participant/call
+              /*restTemplate.postForLocation(url, request);
+               restTemplate.postForLocation("http://localhost:8101/participant/call", message);
+               */
+        	 
+        	 HttpHeaders headers = new HttpHeaders();
+        	 headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        	 MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        	 map.add("port", "8104");
+        	 map.add("first", "true");
+        	 
+
+        	 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+        	 ResponseEntity<String> response = restTemplate.postForEntity( "http://localhost:8103/participant/call", request , String.class );
+        	option=scan.nextLine();
+        }break;
         
         default :{
            System.out.println("Invalid Option");
@@ -468,15 +506,21 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
   }
      
       
-      public static void sendThroughURLCall(String Recipient) throws Exception {//added to be used later by an orchestrator to call participants. Problem is, we need to use a single controller, which means that the method in the generic one would be called (unless we do some trich from the orchestrator, like pre-publishing from there if possible.
+      public static void sendThroughURLCall(String RecipientPort, String first) throws Exception {//added to be used later by an orchestrator to call participants. Problem is, we need to use a single controller, which means that the method in the generic one would be called (unless we do some trich from the orchestrator, like pre-publishing from there if possible.
       	//We can add a flag in the request and a boolean here to let the orchestrator, knowing the first participant, require the participant to pre-publish.
-    	  recipientPort=Recipient;
-          
+    	  recipientPort=RecipientPort;
+          System.out.println("Recipient port: "+RecipientPort+" , first= "+first );
           Random rand = new Random();
           int n = rand.nextInt(500000) + 1;
           String dummyData = "Data"+n+""+System.currentTimeMillis();
           //JWTMsg msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {mostRecentAuditRecord}, new String[] {"ParaPrev1", "ParaPrev2"});
         //Added to allow participant to send message without having to receive anything before(in case this should be considered.
+          if (first.equalsIgnoreCase("true")) {//first participant to publish
+        	  publishAuditRecord("key.priv","Prev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+              //  publishAuditRecord("key.priv","Prev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+                publishAuditRecord("key.priv","ParaPrev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+                publishAuditRecord("key.priv","ParaPrev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+          }
           JWTMsg msg;
           if(AuditRecsforReceivedMessages.isEmpty()) {
           	 msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {"Prev1"}, new String[] {"ParaPrev1", "ParaPrev2"});
@@ -484,7 +528,7 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
           else { msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});}
           
          
-      	FileWriter fileWriter = new FileWriter(file_send,true);
+     	FileWriter fileWriter = new FileWriter(file_send,true);
       	long startTime = System.currentTimeMillis();
       	
           sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
