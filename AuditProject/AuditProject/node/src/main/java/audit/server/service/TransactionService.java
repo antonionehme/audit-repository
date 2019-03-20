@@ -1,6 +1,7 @@
 package audit.server.service;
 
 
+import audit.server.datasize.InstrumentationAgent;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,12 @@ public class TransactionService {
     public List<Transaction> getTransactionPool() {
         return transactionPool;
     }
+    
+    public long size() {//Added to get the size of whatever is on the server.
+    	//audit.server.datasize.InstrumentationAgent.premain(agentArgs, inst);
+    	return 10;//audit.server.datasize.InstrumentationAgent.getObjectSize(transactionPool);
+    }
+    
 
     /**
      * Add a new Transaction to the pool

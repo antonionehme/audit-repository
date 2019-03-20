@@ -34,6 +34,13 @@ public class TransactionController {
         this.transactionService = transactionService;
         this.nodeService = nodeService;
     }
+    
+    @RequestMapping(value= "size")
+    long getAuditSize() {
+    	return transactionService.size();
+    }
+    
+  
 
     /**
      * Retrieve all Transactions, which aren't in a block yet
