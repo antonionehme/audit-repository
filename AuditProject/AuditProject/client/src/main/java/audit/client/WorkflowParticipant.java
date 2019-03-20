@@ -369,8 +369,9 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
     
     public static void sendThroughURLCall(String RecipientPort, boolean first) throws Exception {//added to be used later by an orchestrator to call participants. Problem is, we need to use a single controller, which means that the method in the generic one would be called (unless we do some trich from the orchestrator, like pre-publishing from there if possible.
       	//We can add a flag in the request and a boolean here to let the orchestrator, knowing the first participant, require the participant to pre-publish.
-    	  recipientPort=RecipientPort;
-        
+    	String RecipientPort_sub= RecipientPort.substring(5, 9);
+  	  recipientPort=RecipientPort_sub;
+        System.out.println("Recipient port: "+RecipientPort+" , first= "+first );
         Random rand = new Random();
         int n = rand.nextInt(500000) + 1;
         String dummyData = "Data"+n+""+System.currentTimeMillis();
