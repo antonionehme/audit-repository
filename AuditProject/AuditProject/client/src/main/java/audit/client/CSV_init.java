@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class CSV_init {
 public static void main (String args[]) throws IOException {
 	String file_send = "data_send.csv";String file_recieve = "data_receive.csv";String file_combo = "data_combo.csv";
-	String FILE_HEADER_send = "Participant,Time to Send"+"\n"; String FILE_HEADER_recieve = "Participant,Time to Receive"+"\n";
+	String FILE_HEADER_send = "Participant,Time to Send,Size of Message,Data size on server"+"\n"; String FILE_HEADER_recieve = "Participant,Time to Receive,Size of Message,Data size on server"+"\n";
 	FileWriter fileWriter_send = new FileWriter(file_send); FileWriter fileWriter_recieve = new FileWriter(file_recieve);
 	FileWriter fileWriter_combo = new FileWriter(file_combo);
     //Write the CSV file header

@@ -92,6 +92,7 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
 	  static String file_recieve = "data_receive.csv"; 
       static double constant = 1;
       static double mu=0; static double sigma=0;
+      static int SentMessageSize=0; static int ReceivedMessageSize=0;
 	  
     public static void main(String args[]) throws Exception, IOException {
     	publishAddress("key.pub", "Antonio Nehme");//publishAddress("key.pub", "Antonio Nehme");
@@ -175,7 +176,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
     	  /*EncryptedAuditRecordverification(message,"client2");
               msgPool.add(message);*/
     	  System.out.println("_____________Message Received by "+ name );
-     	 
+    	  ReceivedMessageSize=message.length()/343;
+    	  System.out.println("ReceivedMsgSize= "+ message.length()+ " which is equivalent to "+  message.length()/343+ "Unit(s)");
     	  FileWriter fileWriter_recieve = new FileWriter(file_recieve,true);
       	long startTime_recieve = System.currentTimeMillis();
       	
@@ -187,7 +189,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         long endTime_recieve = System.currentTimeMillis(); long duration_recieve = (endTime_recieve - startTime_recieve);//+(long)delay;
         //long duration_recieve_with_delay=(endTime_recieve - startTime_recieve)+(long)delay;
         //fileWriter_recieve.append(name+","+duration_recieve+","+duration_recieve_with_delay+"\n");
-        fileWriter_recieve.append(name+","+duration_recieve+"\n");
+        fileWriter_recieve.append(name+","+duration_recieve+","+ReceivedMessageSize+","+AuditRecordsSize()+"\n");
+        //fileWriter_recieve.append(name+","+duration_recieve+"\n");
         fileWriter_recieve.flush();
         fileWriter_recieve.close();
         
@@ -241,6 +244,11 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         	System.out.println("pulledAuditRecs "+pulledAuditRecs+" getStoredAuditRecs "+getStoredAuditRecs()+" getPostedAuditRecs "+getPostedAuditRecs());
         	if(pulledAuditRecs.equals(getStoredAuditRecs()))System.out.println("pulledAuditRecs and etStoredAuditRecs() are equal");
         	System.out.println("Equivalent AuditRecsforReceivedMessages"+AuditRecsforReceivedMessages);
+        	int sizeofAuditRecsforReceivedMessages=0;
+        	for(int i=0; i<AuditRecsforReceivedMessages.size();i++) {
+        		sizeofAuditRecsforReceivedMessages=sizeofAuditRecsforReceivedMessages+AuditRecsforReceivedMessages.get(i).length();
+        	}
+        	System.out.println("Size of Equivalent audit records"+sizeofAuditRecsforReceivedMessages);
         	System.out.println("Arrays.toString(calculateLocalHash()) "+ Arrays.toString(calculateLocalHash()));
         	System.out.println("0 to Add Address, 1 to VerifyServer, 2 to see last reported record on the audit server, 3 to Publish a message, 4 Send a message to another recipient, 5 to Override Recipient Port, X to exit.");
             option=scan.nextLine();}
@@ -267,7 +275,7 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
         /*///////////
         long startTime2 = System.currentTimeMillis();
         //sendMessageToParticipant("http://localhost:8102/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
@@ -313,7 +321,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
          sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         
          long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-         fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
+         fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        // fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
      	fileWriter.flush();
          fileWriter.close();
          	option=scan.nextLine();
@@ -338,7 +347,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        //fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
         //fileWriter_combo.append(name+ " to "+recipientPort+","+duration+","+"\n");
         
         /*///////////
@@ -401,7 +411,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
        
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        //fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
     	fileWriter.flush();
         fileWriter.close();
     }
@@ -444,7 +455,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
     	sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+       // fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
         //fileWriter_combo.append(name+ " to "+recipientPort+","+duration+","+"\n");
         
         /*///////////
@@ -556,6 +568,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
 		
 		String JWTEncMsg= msg.ArraytoStringCleanCut(msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic()));//msg.Enc_JWT(msg,(RSAPublicKey)receiverPair.getPublic());
 		System.out.println("Encrypted String Sent to Participant " +JWTEncMsg);
+		System.out.println("UnencryptedMsgSize= "+ msg.Plain_JWT(msg).length()+" SentMsgSize= "+ JWTEncMsg.length()+ " which is equivalent to "+  JWTEncMsg.length()/343+ "Unit(s)");
+		SentMessageSize=JWTEncMsg.length()/343;
 		//My guess is that when encrypting a string with a public key, its size changes.<=========
 		String[] EncryptedArray=msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic());
 		System.out.println("Printing Array: "+ EncryptedArray.toString());
@@ -764,6 +778,30 @@ pullAudits();// Verify that tthe audit record shows on the audit server/
     	mostRecentAuditRecord=mostRecentAuditRecordtemp;
     	mostRecentReportingTime=mostRecentReportingTimetemp;
     	mostRecentReportedLocalHash=mostRecentReportedLocalHashtemp;
+    }
+    
+    public static String AuditRecordsSize() throws Exception {
+        String url = "http://localhost:8080/transaction/size";
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        // optional default is GET
+        con.setRequestMethod("GET");
+        //add request header
+        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+        int responseCode = con.getResponseCode();
+       // System.out.println("\nSending 'GET' request to URL : " + url);
+        //System.out.println("Response Code : " + responseCode);
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+        	response.append(inputLine);
+        }
+        in.close();
+        //print in String
+        String ResponseStr=response.toString();
+        return ResponseStr;//.substring(1, ResponseStr.length()-1);
     }
     
     public static void pullAudits() throws Exception { //Filling the Hashmap pulledAuditRecs. It also locates the most recently published audit record, and assigns it to static variables using SetRecentAuditRecord(,,) 

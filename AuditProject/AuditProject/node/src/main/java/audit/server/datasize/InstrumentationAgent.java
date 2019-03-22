@@ -1,6 +1,7 @@
 package audit.server.datasize;
 
 import java.lang.instrument.Instrumentation;
+import java.lang.instrument.*;
 
 public class InstrumentationAgent {
 	 private static volatile Instrumentation globalInstrumentation;

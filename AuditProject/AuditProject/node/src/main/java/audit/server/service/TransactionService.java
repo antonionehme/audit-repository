@@ -28,7 +28,7 @@ public class TransactionService {
     /**
      * Pool of Transactions which are not included in a Block yet.
      */
-    private static List<Transaction> transactionPool = new ArrayList<>();//chaged to static
+    private static List<Transaction> transactionPool = new ArrayList<>();//changed to static
     //===> Changed from hashmap to arraylist
     // This is where transactions are stored.
     
@@ -44,7 +44,8 @@ public class TransactionService {
     
     public long size() {//Added to get the size of whatever is on the server.
     	//audit.server.datasize.InstrumentationAgent.premain(agentArgs, inst);
-    	return 10;//audit.server.datasize.InstrumentationAgent.getObjectSize(transactionPool);
+    	return 10;
+    	//return audit.server.datasize.InstrumentationAgent.getObjectSize(transactionPool);
     }
     
 

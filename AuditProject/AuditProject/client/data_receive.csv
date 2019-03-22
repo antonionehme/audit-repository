@@ -1,16 +1,14 @@
-Participant,Time to Receive
-Participant2,536
-,32
-Participant3,35
-Participant2,29
-Participant2,24
-,24
-Participant2,25
-Participant2,488
-Participant2,508
-,34
-Participant3,54
-Participant2,35
-Participant2,30
-,30
-Participant2,26
+Participant,Time to Receive,Size of Message,Data size on server
+Participant2,481,1,10
+Participant2,18,1,10
+Participant3,500,4,10
+Participant4,500,7,10
+Participant5,531,11,10
+Participant6,563,16,10
+Participant7,571,23,10
+Participant8,677,33,10
+Participant9,702,47,10
+Participant10,767,67,10
+Participant5,44,4,10
+Participant6,31,4,10
+,448,94,10
