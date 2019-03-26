@@ -44,7 +44,13 @@ public class TransactionService {
     
     public long size() {//Added to get the size of whatever is on the server.
     	//audit.server.datasize.InstrumentationAgent.premain(agentArgs, inst);
-    	return 10;
+    	int size=0;
+    	  for(int i=0; i<transactionPool.size(); i++){
+    		 //System.out.println(transactionPool.get(i).toString());
+    	  size+=transactionPool.get(i).MyToString().length();
+    	  }
+    	return size;
+    	//return transactionPool.toString().length();
     	//return audit.server.datasize.InstrumentationAgent.getObjectSize(transactionPool);
     }
     

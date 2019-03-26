@@ -35,7 +35,7 @@ public class Transaction {
      */
     private long timestamp;
 
-    public Transaction() {
+    public Transaction() { 
     }
 
     public Transaction(String cipher, byte[] senderHash, byte[] signature) {
@@ -56,9 +56,11 @@ public class Transaction {
         this.LocalDigest=LocalDigest;
     }
 
-  /*  public String toString() {
-    	return "test";
-    }*/
+    public String MyToString() {
+    	String ret=cipher+senderHash+signature+timestamp+hash+LocalDigest;
+    	return ret;
+    }
+    
     public byte[] getHash() {
         return hash;
     }
