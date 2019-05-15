@@ -8,7 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import audit.server.rest.TransactionController;
 import audit.server.service.AddressService;
 import audit.server.service.TransactionService;
-
+/*
+ * Developed as a proof of concept for Decentralised and Collaborative Auditing of workflows. 
+ * Antonio Nehme- Birmingham City University
+ * */
 
 @SpringBootApplication
 public class AuditNode extends TransactionService {

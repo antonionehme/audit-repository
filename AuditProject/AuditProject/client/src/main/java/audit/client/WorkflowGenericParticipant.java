@@ -100,6 +100,7 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
       static double constant = 1;
       static double mu=0; static double sigma=0;
       static int SentMessageSize=0; static int ReceivedMessageSize=0;
+      static int UnencryptedSentMsglength=0; static int encryptedSentMsglength=0;
 	  
     public static void main(String args[]) throws Exception { 
         
@@ -408,8 +409,9 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
        
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
        // fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
-        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
-    	fileWriter.flush();
+        //fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        fileWriter.flush();
         fileWriter.close();
         	option=scan.nextLine();
         }break;
@@ -439,8 +441,9 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
         
          long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
          //fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
-         fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
-     	fileWriter.flush();
+        // fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+         fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+         fileWriter.flush();
          fileWriter.close();
          	option=scan.nextLine();
          }break;
@@ -466,8 +469,9 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
        
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
        // fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
-        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
-    	fileWriter.flush();
+       // fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        fileWriter.flush();
         fileWriter.close();
         
         clean();
@@ -547,7 +551,8 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
          
           long endTime = System.currentTimeMillis(); long duration = (endTime - startTime);
           //fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
-          fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+          //fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+          fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
       	fileWriter.flush();
           fileWriter.close();
       }
@@ -583,7 +588,8 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
           
           long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
           //fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
-          fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+          //fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+          fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
           //fileWriter_combo.append(name+ " to "+recipientPort+","+duration+","+"\n");
           
           /*///////////
@@ -697,6 +703,7 @@ public class WorkflowGenericParticipant {//Added the extension hoping to get the
 		String JWTEncMsg= msg.ArraytoStringCleanCut(msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic()));//msg.Enc_JWT(msg,(RSAPublicKey)receiverPair.getPublic());
 		//System.out.println("Encrypted String Sent to Next participant " +JWTEncMsg);
 		System.out.println("UnencryptedMsgSize= "+ msg.Plain_JWT(msg).length()+" SentMsgSize= "+ JWTEncMsg.length()+ " which is equivalent to "+  JWTEncMsg.length()/343+ "Unit(s)");
+		UnencryptedSentMsglength=msg.Plain_JWT(msg).length();encryptedSentMsglength=JWTEncMsg.length();
 		SentMessageSize=JWTEncMsg.length()/343;
 		//My guess is that when encrypting a string with a public key, its size changes.<=========
 		String[] EncryptedArray=msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic());

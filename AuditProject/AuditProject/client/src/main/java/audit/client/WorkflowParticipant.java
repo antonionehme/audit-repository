@@ -93,6 +93,7 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
       static double constant = 1;
       static double mu=0; static double sigma=0;
       static int SentMessageSize=0; static int ReceivedMessageSize=0;
+      static int UnencryptedSentMsglength=0; static int encryptedSentMsglength=0;
 	  
     public static void main(String args[]) throws Exception, IOException {
     	publishAddress("key.pub", "Antonio Nehme");//publishAddress("key.pub", "Antonio Nehme");
@@ -275,7 +276,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        //fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
         /*///////////
         long startTime2 = System.currentTimeMillis();
         //sendMessageToParticipant("http://localhost:8102/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
@@ -321,8 +323,9 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
          sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         
          long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-         fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
-        // fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
+         //fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+         fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+         // fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
      	fileWriter.flush();
          fileWriter.close();
          	option=scan.nextLine();
@@ -347,7 +350,9 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+       // fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        
         //fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
         //fileWriter_combo.append(name+ " to "+recipientPort+","+duration+","+"\n");
         
@@ -411,7 +416,8 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
        
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+       // fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
         //fileWriter.append(name+ " to "+recipientPort+","+duration+"\n");
     	fileWriter.flush();
         fileWriter.close();
@@ -455,8 +461,9 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
     	sendMessageToParticipant("http://localhost:"+recipientPort+"/participant?publish=true", msg, "key.priv", "HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=", "client2", "server");
         
         long endTime = System.currentTimeMillis();long duration = (endTime - startTime);
-        fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
-       // fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
+      //  fileWriter.append(name+ " to "+recipientPort+","+duration+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        fileWriter.append(name+ " to "+recipientPort+","+duration+","+UnencryptedSentMsglength+","+encryptedSentMsglength+","+SentMessageSize+","+AuditRecordsSize()+"\n");
+        // fileWriter.append(name+ " to "+recipientPort+","+duration+","+"\n");
         //fileWriter_combo.append(name+ " to "+recipientPort+","+duration+","+"\n");
         
         /*///////////
@@ -569,6 +576,7 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
 		String JWTEncMsg= msg.ArraytoStringCleanCut(msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic()));//msg.Enc_JWT(msg,(RSAPublicKey)receiverPair.getPublic());
 		System.out.println("Encrypted String Sent to Participant " +JWTEncMsg);
 		System.out.println("UnencryptedMsgSize= "+ msg.Plain_JWT(msg).length()+" SentMsgSize= "+ JWTEncMsg.length()+ " which is equivalent to "+  JWTEncMsg.length()/343+ "Unit(s)");
+		UnencryptedSentMsglength=msg.Plain_JWT(msg).length();encryptedSentMsglength=JWTEncMsg.length();
 		SentMessageSize=JWTEncMsg.length()/343;
 		//My guess is that when encrypting a string with a public key, its size changes.<=========
 		String[] EncryptedArray=msg.encrypt_long(msg.Split_to_List(msg.Plain_JWT(msg)), receiverPair.getPublic());
