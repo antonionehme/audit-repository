@@ -26,8 +26,10 @@ public class Orchestrator {
 	
 	 public static void ExecuteTopology() throws Exception {
 		 List<List<String>> records = new ArrayList<>();
-		 try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\ID126219\\Dropbox\\PhD\\Readings\\BCU\\Papers and Drafts\\Authorization and Audit Framework for E-Government Workflows\\Evaluation\\Brite\\Output\\552.csv"))) {
-		     String line;
+		 try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\ID126219\\Dropbox\\PhD\\Readings\\BCU\\Papers and Drafts\\Authorization and Audit Framework for E-Government Workflows\\Evaluation\\Brite\\Output\\Single Topologies- No Aggregations\\15 Nodes\\BAn15m7_5-Topology.csv"))) {
+	//try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\ID126219\\Desktop\\20 Nodes\\BAn20m15_1-Topology.csv"))) {
+				 
+			 String line;
 		     while ((line = br.readLine()) != null) {
 		     	String first="false";
 		         String[] values = line.split(",");

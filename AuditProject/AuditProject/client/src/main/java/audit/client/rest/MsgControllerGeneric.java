@@ -13,6 +13,7 @@ import audit.client.WorkflowParticipant4;
 import audit.client.WorkflowParticipant5;
 import audit.client.service.MsgService;
 import audit.common.domain.Transaction;
+//import audit.server.AuditNode;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,6 +45,11 @@ public class MsgControllerGeneric {
 		return msgService.getmsgPool();
 	}
 
+	//Added this to clean participants.
+    @RequestMapping(value="clean",method = RequestMethod.DELETE)
+    void clean(){
+    	msgService.clean();
+    }
 	/**
 	 * Add a new Transaction to the pool. It is expected that the transaction has a
 	 * valid signature and the correct hash.

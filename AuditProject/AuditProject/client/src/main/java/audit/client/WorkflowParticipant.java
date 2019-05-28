@@ -403,11 +403,13 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
         	 publishAuditRecord("key.priv","Prev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
              //  publishAuditRecord("key.priv","Prev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
                publishAuditRecord("key.priv","ParaPrev1","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
-               publishAuditRecord("key.priv","ParaPrev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
-               
-        	 msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {"Prev1"}, new String[] {"ParaPrev1", "ParaPrev2"});
+              // publishAuditRecord("key.priv","ParaPrev2","HEWtNSfUAMKEitKc5MBThupdOTj98oV/VaLG9LbR5Ms=");
+             //msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, new String[] {"Prev1"}, new String[] {"ParaPrev1", "ParaPrev2"});
+               msg=new JWTMsg(dummyData, name, recipientPort, "", new String[] {"Prev1"}, new String[] {"ParaPrev1"});
         }
-        else { msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});}
+        else { //msg=new JWTMsg(dummyData, name, "Recipient", "http://localhost:"+recipientPort, ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1", "ParaPrev2"});
+        	msg=new JWTMsg(dummyData, name, recipientPort, "", ArraylistToArray(AuditRecsforReceivedMessages), new String[] {"ParaPrev1"});
+        	}
         
        
     	FileWriter fileWriter = new FileWriter(file_send,true);
@@ -432,7 +434,14 @@ public class WorkflowParticipant {//Added the extension hoping to get the servic
    */
     	pulledAuditRecs.clear();AuditRecsforReceivedMessages.clear();pulledAuditRecsReportingTime.clear();
     	postedAuditRecs.clear();
-    	//pulledAuditRecs.c
+    	//Added after brite
+      	mostRecentReportingTime=(long) 0;//of an audit record by any participant
+   	   mostRecentAuditRecord=""; //published on the audit server by any participant. THis is because elements in a hashmap are not in order.
+   	  mostRecentReportedLocalHash="";// LocalHash Values Reported by other clients to the audit server.
+   	  msgPool.clear();
+      postedAuditRecs.clear();
+     storedAuditRecs.clear();
+   	  //pulledAuditRecs.c
     	/*System.out.println("pulledAuditRecs "+ pulledAuditRecs);
     	System.out.println("AuditRecsforReceivedMessages "+ AuditRecsforReceivedMessages);
     	System.out.println("pulledAuditRecsReportingTime "+ pulledAuditRecsReportingTime);*/
